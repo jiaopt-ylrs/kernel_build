@@ -14,7 +14,7 @@ jobs:
           sudo apt-get install -y zip zipalign bc build-essential zip gcc clang libc6 curl libstdc++6 git wget libssl-dev zstd gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi python2 cpio
       - name: 拉取源代码和工具链
         run: |
-          git clone https://github.com/sticpaper/exthm_xiaomi_sdm845_kernel --depth=1 -b main
+          git clone https://github.com/LineageOS/android_kernel_xiaomi_sdm845 --depth=1 -b main
           git clone https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 --depth=1
           mv linux-x86/clang-r428724 clang
           rm -rf linux-x86
@@ -26,14 +26,14 @@ jobs:
           export KBUILD_BUILD_USER="zclkkk"
           export KBUILD_BUILD_HOST="Server"
           args="O=../out ARCH=arm64 CC=${CLANG_DIR}/bin/clang CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi-"
-          cd exthm_xiaomi_sdm845_kernel
+          cd android_kernel_xiaomi_sdm845
           make ${args} ${BOARD}_defconfig
           make -j16 ${args}
           cd ..
           cp out/arch/arm64/boot/Image.gz-dtb AnyKernel3/
           cp out/arch/arm64/boot/dtbo.img AnyKernel3/
           cd AnyKernel3
-          VERSION="$(cat ../exthm_xiaomi_sdm845_kernel/arch/arm64/configs/${BOARD}_defconfig | grep "CONFIG_LOCALVERSION\=" | sed -r 's/.*"(.+)".*/\1/' | sed 's/^.//')"
+          VERSION="$(cat ../android_kernel_xiaomi_sdm845/arch/arm64/configs/${BOARD}_defconfig | grep "CONFIG_LOCALVERSION\=" | sed -r 's/.*"(.+)".*/\1/' | sed 's/^.//')"
           VERSION=KneipKernel_BETA
           7z a -mx9 ${VERSION}.zip *
           zipalign -v 4 ${VERSION}.zip ../${VERSION}_${BOARD}.zip
